@@ -26,9 +26,19 @@ func main() {
 		server.Use(middleware.Logger())
 	}
 
-	server.GET("/", func(ctx echo.Context) error {
+	api := server.Group("/api")
+
+	api.GET("/", func(ctx echo.Context) error {
 		msg := fmt.Sprintf("<h1>The current time is %s</h1>", time.Now().Format(time.RFC850))
 		return ctx.HTML(http.StatusOK, msg)
+	})
+
+	api.GET("/healthz", func(ctx echo.Context) error {
+		resp := OKResponse{
+			OK:      true,
+			Message: "",
+		}
+		return ctx.JSON(http.StatusOK, resp)
 	})
 
 	log.Println(fmt.Sprintf("Starting server on port %s", opts.Port))
