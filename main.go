@@ -98,6 +98,12 @@ func main() {
 		return ctx.JSON(http.StatusOK, authzResp)
 	})
 
+	// Validate a token
+	api.GET("/validate", func(ctx echo.Context) error {
+		// Place holder
+		return ctx.JSON(http.StatusOK, nil)
+	})
+
 	api.GET("/healthz", func(ctx echo.Context) error {
 		var status OKResponse
 		if err := authDB.Ping(); nil != err {
