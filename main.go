@@ -12,9 +12,11 @@ import (
 )
 
 const (
-	CONTENT_TYPE     = "Content-Type"
-	FORM_URL_ENCODED = "application/x-www-form-urlencoded"
-	JSON             = "application/json"
+	CONTENT_TYPE      = "Content-Type"
+	AUTHORIZATION     = "Authorization"
+	BEARER_WITH_SPACE = "Bearer "
+	FORM_URL_ENCODED  = "application/x-www-form-urlencoded"
+	JSON              = "application/json"
 )
 
 func main() {
@@ -22,6 +24,7 @@ func main() {
 	startedOn := time.Now()
 
 	opts := ParseOptions()
+	opts.Validate()
 
 	// Connect to database
 	authDB := AuthDatabase(opts.DSN)
@@ -53,7 +56,8 @@ func main() {
 		var authzResp PostAuthzResponse
 
 		req := ctx.Request()
-		contentType := req.Header.Get(CONTENT_TYPE)
+
+		contentType := getHeader(CONTENT_TYPE, req)
 
 		data := User{}
 		if strings.HasPrefix(contentType, FORM_URL_ENCODED) {
@@ -84,6 +88,8 @@ func main() {
 			}
 			return ctx.JSON(http.StatusUnauthorized, authzResp)
 		}
+
+		// Generate token
 
 		authzResp = PostAuthzResponse{
 			Message: fmt.Sprintf("Authenticated %s", data.Username),
